@@ -154,3 +154,6 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
+/packages/Extended.Wpf.Toolkit.2.3
+/packages/OxyPlot.Core.2014.1.546
+/packages/OxyPlot.Wpf.2014.1.546
