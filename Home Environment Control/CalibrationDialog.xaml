@@ -1,0 +1,10 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Home_Environment_Control" x:Class="Home_Environment_Control.CalibrationDialog"
+        Title="CalibrationDialog" Height="300" Width="300">
+	<Window.DataContext>
+		<local:Network/>
+	</Window.DataContext>
+	<Grid/>
+</Window>
