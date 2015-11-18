@@ -29,13 +29,23 @@ namespace Home_Environment_Control {
 			// Initialize the components
 			InitializeComponent();
 
-			// Connect to the Dihedral database
+			// Connect to the database
 			StartDBConnection();
 
-			// Set the data context for this window
-			TimeSeriesPlot curPlot = new TimeSeriesPlot();
-			_isCorrelationPlot = false;
-			this.DataContext = curPlot;
+            // Open the login window
+            LoginWindow loginPage = new LoginWindow(_dbConnection);
+            if((bool) loginPage.ShowDialog()) {
+				// Initialize the data model
+				InputNetworkData();
+
+                // Set the data context for this window
+                TimeSeriesPlot curPlot = new TimeSeriesPlot();
+                _isCorrelationPlot = false;
+                this.DataContext = curPlot;
+            } else {
+				// Exit the program
+				Environment.Exit(0);
+			}
 		}
 
 		private void StartDBConnection() {
@@ -43,9 +53,11 @@ namespace Home_Environment_Control {
 			if(_dbConnection != null) _dbConnection.Dispose();
 
 			// Create the new connection
-//			_dbConnection = new MySQLConnection("192.168.2.53", "data_logger", "QwTXBQ3pQjdUXrMH", "home_monitor");
-			_dbConnection = new MySQLConnection("192.168.2.53", "tl1", "1tiM&Merz9", "home_monitor");
+			_dbConnection = new MySQLConnection("192.168.2.53", "data_logger", "QwTXBQ3pQjdUXrMH", "home_monitor");
+//			_dbConnection = new MySQLConnection("192.168.2.53", "tl1", "1tiM&Merz9", "home_monitor");
+		}
 
+		private void InputNetworkData() {
 			// Initialize the database description
 			_network = new Network();
 			_network.Populate(_dbConnection);
