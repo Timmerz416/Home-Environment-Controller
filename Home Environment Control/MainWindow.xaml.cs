@@ -18,56 +18,66 @@ using System.Net.Sockets;
 using Ruminations.Database.MySQL;
 
 namespace Home_Environment_Control {
+
+	//=========================================================================
+	// MainWindow - THE MAIN CLASS FOR THIS APPLICATION
+	//=========================================================================
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
 	public partial class MainWindow : Window {
-		private MySQLConnection _dbConnection;
+		private MySQLConnection _dbConnection = null;
 		private Network _network;
 		private bool _isCorrelationPlot;
 		private SocketListener _socketCtrl;
 
 		#region Methods
+		//---------------------------------------------------------------------
+		// MainWindow - MAIN PROGRAM EXECUTION
+		//---------------------------------------------------------------------
+		/// <summary>
+		/// The entry point for this program.
+		/// </summary>
 		public MainWindow() {
-			// Initialize the components
+			// INITIALIZATION
+			///////////////////////////////////////////////////////////////////
+			// Initialize the GUI components
 			InitializeComponent();
 
-			// Connect to the database
-			StartDBConnection();
+			try {
+				// Connect to the database
+				_dbConnection = new MySQLConnection("192.168.2.53", "data_logger", "QwTXBQ3pQjdUXrMH", "home_monitor");
+//				_dbConnection = new MySQLConnection("192.168.2.53", "tl1", "1tiM&Merz9", "home_monitor");
 
-            // Open the login window
-            LoginWindow loginPage = new LoginWindow(_dbConnection);
-            if((bool) loginPage.ShowDialog()) {
-				// Initialize the data model
-				InputNetworkData();
+				// START INTERACTION WITH THE USER
+				///////////////////////////////////////////////////////////////
+				// Open and display the login window
+				LoginWindow loginPage = new LoginWindow(_dbConnection);
+				if((bool)loginPage.ShowDialog()) {
+					// USER LOGGED IN, SETUP DATA MODELS AND START INTERFACE
+					///////////////////////////////////////////////////////////
+					// Initialize the database description
+					_network = new Network();
+					_network.Populate(_dbConnection);
 
-                // Set the data context for this window
-                TimeSeriesPlot curPlot = new TimeSeriesPlot();
-                _isCorrelationPlot = false;
-                this.DataContext = curPlot;
+					// Setup the socket listening port
+					_socketCtrl = new SocketListener(6232);
+					_socketCtrl.DataReceived += socketCtrl_DataReceived;
 
-				// Setup the socket listening port
-				_socketCtrl = new SocketListener(6232);
-				_socketCtrl.DataReceived += socketCtrl_DataReceived;
-            } else {
-				// Exit the program
+					// Set the data context for this window
+					TimeSeriesPlot curPlot = new TimeSeriesPlot();
+					_isCorrelationPlot = false;
+					this.DataContext = curPlot;
+				} else {
+					// USER NOT LOGGED IN, EXIT THE PROGRAM
+					///////////////////////////////////////////////////////////
+					Environment.Exit(0);
+				}
+			} catch(Exception ex) {
+				// Alert the user to the issue and close the program
+				MessageBox.Show(ex.Message + "\nAPPLICATION CLOSING", "Fatal Error in Program", MessageBoxButton.OK, MessageBoxImage.Stop);
 				Environment.Exit(0);
 			}
-		}
-
-		private void StartDBConnection() {
-			// Close any existing databases
-			if(_dbConnection != null) _dbConnection.Dispose();
-
-			// Create the new connection
-			_dbConnection = new MySQLConnection("192.168.2.53", "data_logger", "QwTXBQ3pQjdUXrMH", "home_monitor");
-//			_dbConnection = new MySQLConnection("192.168.2.53", "tl1", "1tiM&Merz9", "home_monitor");
-		}
-
-		private void InputNetworkData() {
-			// Initialize the database description
-			_network = new Network();
-			_network.Populate(_dbConnection);
 		}
 		#endregion Methods
 
