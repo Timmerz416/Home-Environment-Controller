@@ -7,36 +7,42 @@
 	<DockPanel>
 		<Ribbon x:Name="_ribbon" DockPanel.Dock="Top" ShowQuickAccessToolBarOnTop="False">
 			<Ribbon.ApplicationMenu>
-				<RibbonApplicationMenu HorizontalAlignment="Right">
+				<RibbonApplicationMenu HorizontalAlignment="Right" Label="" Visibility="Collapsed">
 					<RibbonApplicationMenuItem Header="Export"/>
 				</RibbonApplicationMenu>
 			</Ribbon.ApplicationMenu>
 			<RibbonTab Header="Graph">
 				<RibbonGroup Header="Graph Types">
 					<RibbonButton Label="Time Series" SmallImageSource="Icons\chart_line.png" LargeImageSource="Icons\chart_line.png" Click="TimeSeriesGraph_Click" />
-                    <RibbonButton Label="Correlation" SmallImageSource="Icons\chart_bullseye.png" LargeImageSource="Icons\chart_bullseye.png" Click="CorrelationGraph_Click" />
+					<RibbonButton Label="Correlation" SmallImageSource="Icons\chart_bullseye.png" LargeImageSource="Icons\chart_bullseye.png" Click="CorrelationGraph_Click" />
 				</RibbonGroup>
-                <RibbonGroup Header="Series">
-                    <RibbonButton Label="Add Series" SmallImageSource="Icons\chart_line_add.png" LargeImageSource="Icons\chart_line_add.png" Click="AddSeriesButton_Click" />
-                    <RibbonButton Label="Edit Series" SmallImageSource="Icons\chart_line_edit.png" LargeImageSource="Icons\chart_line_edit.png" />
-                </RibbonGroup>
-                <RibbonGroup Header="Display">
-                    <Grid Margin="0 3">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="2" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <Label Grid.Row="0" Grid.Column="0" Content="Start:" />
-                        <xctk:DateTimePicker Grid.Row="0" Grid.Column="1" x:Name="_startDate" Value="{Binding MinDate}" ValueChanged="axesDates_ValueChanged" FormatString="yyyy-MM-dd HH:mm" Format="Custom" />
-                        <Label Grid.Row="2" Grid.Column="0" Content="End:" />
-                        <xctk:DateTimePicker Grid.Row="2" Grid.Column="1" x:Name="_endDate" Value="{Binding MaxDate}" ValueChanged="axesDates_ValueChanged" FormatString="yyyy-MM-dd HH:mm" Format="Custom" />
-                    </Grid>
-                </RibbonGroup>
+				<RibbonGroup Header="Series">
+					<RibbonButton Label="Add Series" SmallImageSource="Icons\chart_line_add.png" LargeImageSource="Icons\chart_line_add.png" Click="AddSeriesButton_Click" />
+					<RibbonButton Label="Edit Series" SmallImageSource="Icons\chart_line_edit.png" LargeImageSource="Icons\chart_line_edit.png" />
+				</RibbonGroup>
+				<RibbonGroup Header="Display">
+					<Grid Margin="0 3">
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="2" />
+							<RowDefinition Height="Auto" />
+						</Grid.RowDefinitions>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition Width="Auto" />
+						</Grid.ColumnDefinitions>
+						<Label Grid.Row="0" Grid.Column="0" Content="Start:" />
+						<xctk:DateTimePicker Grid.Row="0" Grid.Column="1" x:Name="_startDate" Value="{Binding MinDate}" ValueChanged="axesDates_ValueChanged" FormatString="yyyy-MM-dd HH:mm" Format="Custom" />
+						<Label Grid.Row="2" Grid.Column="0" Content="End:" />
+						<xctk:DateTimePicker Grid.Row="2" Grid.Column="1" x:Name="_endDate" Value="{Binding MaxDate}" ValueChanged="axesDates_ValueChanged" FormatString="yyyy-MM-dd HH:mm" Format="Custom" />
+					</Grid>
+				</RibbonGroup>
+			</RibbonTab>
+			<RibbonTab Header="System">
+				<RibbonGroup Header="Status">
+					<RibbonButton Label="Relay Status" SmallImageSource="Icons\radio.png" LargeImageSource="Icons\radio.png" Click="RelayStatus_Click"/>
+					<RibbonButton Label="Relay Clock" SmallImageSource="Icons\clock.png" LargeImageSource="Icons\clock.png" Click="ClockStatus_Click" />
+				</RibbonGroup>
 			</RibbonTab>
 		</Ribbon>
 		<StatusBar DockPanel.Dock="Bottom">
@@ -44,8 +50,8 @@
 				Status Bar.
 			</Label>
 		</StatusBar>
-        <oxy:PlotView x:Name="_graph" Model="{Binding Model}">
-        </oxy:PlotView>
-    </DockPanel>
+		<oxy:PlotView x:Name="_graph" Model="{Binding Model}">
+		</oxy:PlotView>
+	</DockPanel>
 </Window>
  

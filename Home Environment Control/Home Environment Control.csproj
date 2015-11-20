@@ -90,6 +90,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="SocketListener.cs" />
     <Page Include="CalibrationDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -170,6 +171,15 @@
   <ItemGroup>
     <Resource Include="Icons\chart_line_add.png" />
     <Resource Include="Icons\chart_line_edit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\radio.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\clock_edit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\clock.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
