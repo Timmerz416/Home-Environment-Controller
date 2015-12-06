@@ -1,0 +1,51 @@
+﻿<Window x:Name="window" x:Class="Home_Environment_Control.RelayTimeDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Home_Environment_Control"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d"
+        Title="Configure Time on Relay Controller" ResizeMode="NoResize" d:DesignWidth="390" SizeToContent="Height" Width="400">
+	<Grid VerticalAlignment="Top">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+		<GroupBox Grid.Row="0" Header="Relay Time Status">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition />
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+				<Label Grid.Column="0" HorizontalAlignment="Left">Current Time:</Label>
+				<TextBox x:Name="RelayTimeBox" Grid.Column="1" Margin="0,0,5,0" VerticalContentAlignment="Center" Height="24" Text="{Binding ElementName=window, Path=RelayTime, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="False"/>
+				<Button Name="ReloadTimeBtn" Grid.Column="2" VerticalContentAlignment="Center" HorizontalAlignment="Right" Margin="0" Padding="5,1" Width="50" Height="{Binding Height, ElementName=RelayTimeBox}" Click="ReloadTimeBtn_Click">Sync</Button>
+			</Grid>
+		</GroupBox>
+		<GroupBox Grid.Row="1" Header="Set Relay Time">
+			<Grid VerticalAlignment="Top">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+				<RadioButton Name="CurrentTimeRadio" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" GroupName="TimeRadioGroup" Checked="CurrentTimeRadio_Checked" />
+				<Label Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Height="{Binding Height, ElementName=CurrentTimeBox}" VerticalAlignment="Center">Current Time:</Label>
+				<TextBox x:Name="CurrentTimeBox" Grid.Row="0" Grid.Column="2" Margin="0,2,5,2" VerticalContentAlignment="Center" Height="24" Text="{Binding Now, ElementName=window, Mode=OneWay}"/>
+				<RadioButton Name="UserTimeRadio" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" GroupName="TimeRadioGroup" Checked="UserTimeRadio_Checked" />
+				<Label Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Height="{Binding Height, ElementName=CurrentTimeBox}" VerticalAlignment="Center">User Set Time:</Label>
+				<xctk:DateTimePicker x:Name="CustomTimeBox" Grid.Row="1" Grid.Column="2" Margin="0,2,5,2" Height="{Binding Height, ElementName=CurrentTimeBox}" VerticalAlignment="Center" />
+				<Button Name="SetCurrentTimeBtn" Grid.Row="1" Grid.Column="3" Height="{Binding Height, ElementName=CurrentTimeBox}" VerticalAlignment="Center" Padding="5,1" Click="SetCurrentTimeBtn_Click">Upload</Button>
+			</Grid>
+		</GroupBox>
+		<Button x:Name="exitButton" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Top" Padding="5,0" Margin="5" IsDefault="True" Click="exitButton_Click">Exit</Button>
+	</Grid>
+</Window>
