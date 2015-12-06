@@ -54,10 +54,16 @@ namespace Ruminations.Database.MySQL {
 			return result;
 		}
 
+		protected virtual void Dispose(bool disposing) {
+			if(disposing) {
+				// Close managed resources - DBConnection
+				_dbConnection.Close();
+			}
+		}
+
 		public void Dispose() {
-			// Close the connection and dispose it
-			_dbConnection.Close();
-			_dbConnection.Dispose();
+			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion Methods
 	}

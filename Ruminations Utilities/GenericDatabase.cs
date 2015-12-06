@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.Common;
+using System.Runtime.Serialization;
 
 namespace Ruminations.Database.Generic {
 
@@ -30,12 +31,13 @@ namespace Ruminations.Database.Generic {
 	/// <summary>
 	/// A generic exception class for this library's implementation of the database
 	/// </summary>
+	[Serializable]
 	public class DBException : Exception {
 		//---------------------------------------------------------------------
 		// Error Messages
 		//---------------------------------------------------------------------
 		private static uint NUM_ERRORS = 3;
-		private static uint UNKNOWN_ERROR = 0;
+		public static uint UNKNOWN_ERROR = 0;
 		public static uint CONNECTION_ERROR = 1;
 		public static uint LOGIN_ERROR = 2;
 
@@ -57,8 +59,13 @@ namespace Ruminations.Database.Generic {
 		// Constructors
 		//---------------------------------------------------------------------
 		DBException() : base() { _errorCode = 0; }
-		DBException(string message) : base(message) { _errorCode = 0; }
-		DBException(string message, Exception innerException) : base(message, innerException) { _errorCode = 0; }
+		DBException(uint code) : base() {
+			_errorCode = (code >= NUM_ERRORS) ? UNKNOWN_ERROR : code;
+		}
+
+		public override void GetObjectData(SerializationInfo info, StreamingContext context) {
+			base.GetObjectData(info, context);
+		}
 	}
 
 	//=========================================================================

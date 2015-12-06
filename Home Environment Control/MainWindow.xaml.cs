@@ -25,11 +25,11 @@ namespace Home_Environment_Control {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window {
+	public partial class MainWindow : Window, IDisposable {
 		private MySQLConnection _dbConnection = null;
 		private Network _network;
 		private bool _isCorrelationPlot;
-		private SocketListener _socketCtrl;
+		private SocketController _socketCtrl;
 
 		#region Methods
 		//---------------------------------------------------------------------
@@ -61,7 +61,7 @@ namespace Home_Environment_Control {
 					_network.Populate(_dbConnection);
 
 					// Setup the socket listening port
-					_socketCtrl = new SocketListener(6232);
+					_socketCtrl = new SocketController(6232);
 					_socketCtrl.DataReceived += socketCtrl_DataReceived;
 
 					// Set the data context for this window
@@ -78,6 +78,19 @@ namespace Home_Environment_Control {
 				MessageBox.Show(ex.Message + "\nAPPLICATION CLOSING", "Fatal Error in Program", MessageBoxButton.OK, MessageBoxImage.Stop);
 				Environment.Exit(0);
 			}
+		}
+
+		protected virtual void Dispose(bool disposing) {
+			// Get rid of managed objects
+			if(disposing) {
+				_dbConnection.Dispose();
+				_socketCtrl.Dispose();
+			}
+		}
+
+		public void Dispose() {
+			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 		#endregion Methods
 
@@ -149,7 +162,7 @@ namespace Home_Environment_Control {
 		/// <param name="sender">Object sending the event</param>
 		/// <param name="e">Event arguments</param>
 		private void RelayStatus_Click(object sender, RoutedEventArgs e) {
-			using(Socket server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)) {
+/*			using(Socket server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)) {
 				try {
 					// Send the command to get the status of relay
 					server.Connect(new IPEndPoint(IPAddress.Parse("192.168.2.100"), 5267));
@@ -161,7 +174,7 @@ namespace Home_Environment_Control {
 				} catch(Exception err) {
 					MessageBox.Show("Caught Exception with message '" + err.Message + "' when requesting relay status update.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 				}
-			}
+			}*/
 		}
 
 		//=====================================================================
@@ -171,8 +184,8 @@ namespace Home_Environment_Control {
 		/// Handles data that is collected through the listening socket.
 		/// </summary>
 		/// <param name="socketStr">The data read from the socket</param>
-		private void socketCtrl_DataReceived(byte[] socketStr) {
-			MessageBox.Show(Encoding.UTF8.GetString(socketStr));
+		private void socketCtrl_DataReceived(object sender, byte[] socketStr) {
+			MessageBox.Show("Received the following unknown data over the socket: " + socketStr.ToString(), "Received Socket Data", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 		}
 
 		//=====================================================================
@@ -185,19 +198,23 @@ namespace Home_Environment_Control {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void ClockStatus_Click(object sender, RoutedEventArgs e) {
-			using(Socket server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)) {
-				try {
-					// Send the command to get the status of relay
-					server.Connect(new IPEndPoint(IPAddress.Parse("192.168.2.100"), 5267));
-					byte[] cmd = Encoding.UTF8.GetBytes("CR:GET");
-					int sentBytes = server.Send(cmd, SocketFlags.None);
+			/*			using(Socket server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)) {
+							try {
+								// Send the command to get the status of relay
+								server.Connect(new IPEndPoint(IPAddress.Parse("192.168.2.100"), 5267));
+								byte[] cmd = Encoding.UTF8.GetBytes("CR:GET");
+								int sentBytes = server.Send(cmd, SocketFlags.None);
 
-					// Output result known from this side
-					if(sentBytes != cmd.Length) throw new Exception("Error sending command: send return status is " + sentBytes);
-				} catch(Exception err) {
-					MessageBox.Show("Caught Exception with message '" + err.Message + "' when requesting clock status update.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-				}
-			}
+								// Output result known from this side
+								if(sentBytes != cmd.Length) throw new Exception("Error sending command: send return status is " + sentBytes);
+							} catch(Exception err) {
+								MessageBox.Show("Caught Exception with message '" + err.Message + "' when requesting clock status update.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+							}
+						}*/
+			RelayTimeDialog timeDlg = new RelayTimeDialog();
+			_socketCtrl.TimeDataReceived += timeDlg.HandleSocketTime;
+			timeDlg.TransmissionRequest += _socketCtrl.SendTransmission;
+			timeDlg.Show();
 		}
 		#endregion Event Handlers
 	}
