@@ -39,13 +39,14 @@ namespace Home_Environment_Control {
 		/// The entry point for this program.
 		/// </summary>
 		public MainWindow() {
-			// INITIALIZATION
+			// GUI INITIALIZATION
 			///////////////////////////////////////////////////////////////////
 			// Initialize the GUI components
 			InitializeComponent();
 
 			try {
-				// Connect to the database
+				// DATABASE CONNECTION
+				///////////////////////////////////////////////////////////////
 				_dbConnection = new MySQLConnection("192.168.2.53", "data_logger", "QwTXBQ3pQjdUXrMH", "home_monitor");
 //				_dbConnection = new MySQLConnection("192.168.2.53", "tl1", "1tiM&Merz9", "home_monitor");
 
@@ -56,13 +57,13 @@ namespace Home_Environment_Control {
 				if((bool)loginPage.ShowDialog()) {
 					// USER LOGGED IN, SETUP DATA MODELS AND START INTERFACE
 					///////////////////////////////////////////////////////////
-					// Initialize the database description
-					_network = new Network();
-					_network.Populate(_dbConnection);
-
 					// Setup the socket listening port
 					_socketCtrl = new SocketController(6232);
 					_socketCtrl.DataReceived += socketCtrl_DataReceived;
+
+					// Initialize the database description
+					_network = new Network();
+					_network.Populate(_dbConnection);
 
 					// Set the data context for this window
 					TimeSeriesPlot curPlot = new TimeSeriesPlot();
@@ -94,7 +95,7 @@ namespace Home_Environment_Control {
 		}
 		#endregion Methods
 
-		#region Event Handlers
+		#region Graphing Event Handlers
 		private void TimeSeriesGraph_Click(object sender, RoutedEventArgs e) {
 			// Check that the plot isn't already a time series
 			if(!_isCorrelationPlot) return;
@@ -151,7 +152,9 @@ namespace Home_Environment_Control {
 				modelDriver.UpdateGraph(_dbConnection);
 			}
 		}
+		#endregion Graphing Event Handlers
 
+		#region Event Handlers
 		//=====================================================================
 		// RelayStatus_Click
 		//=====================================================================
@@ -177,9 +180,9 @@ namespace Home_Environment_Control {
 			}*/
 		}
 
-		//=====================================================================
+		//---------------------------------------------------------------------
 		// socketCtrl_DataReceived
-		//=====================================================================
+		//---------------------------------------------------------------------
 		/// <summary>
 		/// Handles data that is collected through the listening socket.
 		/// </summary>
@@ -188,9 +191,9 @@ namespace Home_Environment_Control {
 			MessageBox.Show("Received the following unknown data over the socket: " + socketStr.ToString(), "Received Socket Data", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 		}
 
-		//=====================================================================
+		//---------------------------------------------------------------------
 		// ClockStatus_Click
-		//=====================================================================
+		//---------------------------------------------------------------------
 		/// <summary>
 		/// Event handler for clicking the clock status button - will request the
 		/// current clock settings.
@@ -198,23 +201,25 @@ namespace Home_Environment_Control {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void ClockStatus_Click(object sender, RoutedEventArgs e) {
-			/*			using(Socket server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)) {
-							try {
-								// Send the command to get the status of relay
-								server.Connect(new IPEndPoint(IPAddress.Parse("192.168.2.100"), 5267));
-								byte[] cmd = Encoding.UTF8.GetBytes("CR:GET");
-								int sentBytes = server.Send(cmd, SocketFlags.None);
-
-								// Output result known from this side
-								if(sentBytes != cmd.Length) throw new Exception("Error sending command: send return status is " + sentBytes);
-							} catch(Exception err) {
-								MessageBox.Show("Caught Exception with message '" + err.Message + "' when requesting clock status update.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-							}
-						}*/
+			// Create time dialog and setup events
 			RelayTimeDialog timeDlg = new RelayTimeDialog();
-			_socketCtrl.TimeDataReceived += timeDlg.HandleSocketTime;
-			timeDlg.TransmissionRequest += _socketCtrl.SendTransmission;
-			timeDlg.Show();
+			_socketCtrl.TimeDataReceived += timeDlg.HandleSocketTime;		// Pass time-related data from the socket to the dialog
+			timeDlg.TransmissionRequest += _socketCtrl.SendTransmission;	// Send out transmission to the relay through the socket controller
+			timeDlg.Show();	// Open the window
+		}
+
+		//---------------------------------------------------------------------
+		// ThermosCtrlSwitch_Checked
+		//---------------------------------------------------------------------
+		private void ThermoCtrlSwitch_Checked(object sender, RoutedEventArgs e) {
+
+		}
+
+		//---------------------------------------------------------------------
+		// ProgrammingCtrlSwitch_Checked
+		//---------------------------------------------------------------------
+		private void ProgrammingCtrlSwitch_Checked(object sender, RoutedEventArgs e) {
+
 		}
 		#endregion Event Handlers
 	}

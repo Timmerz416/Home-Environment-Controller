@@ -1,8 +1,10 @@
-﻿<Window x:Class="Home_Environment_Control.MainWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:oxy="http://oxyplot.org/wpf"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="Home_Environment_Control.MainWindow"
+		xmlns:ToggleSwitch="clr-namespace:ToggleSwitch;assembly=ToggleSwitch"
         Title="Home Environment Control" Height="600" Width="750">
 	<DockPanel>
 		<Ribbon x:Name="_ribbon" DockPanel.Dock="Top" ShowQuickAccessToolBarOnTop="False">
@@ -11,7 +13,7 @@
 					<RibbonApplicationMenuItem Header="Export"/>
 				</RibbonApplicationMenu>
 			</Ribbon.ApplicationMenu>
-			<RibbonTab Header="Graph">
+			<RibbonTab Header="Graph" d:IsHidden="True">
 				<RibbonGroup Header="Graph Types">
 					<RibbonButton Label="Time Series" SmallImageSource="Icons\chart_line.png" LargeImageSource="Icons\chart_line.png" Click="TimeSeriesGraph_Click" />
 					<RibbonButton Label="Correlation" SmallImageSource="Icons\chart_bullseye.png" LargeImageSource="Icons\chart_bullseye.png" Click="CorrelationGraph_Click" />
@@ -43,15 +45,30 @@
 					<RibbonButton Label="Relay Status" SmallImageSource="Icons\radio.png" LargeImageSource="Icons\radio.png" Click="RelayStatus_Click"/>
 					<RibbonButton Label="Relay Clock" SmallImageSource="Icons\clock.png" LargeImageSource="Icons\clock.png" Click="ClockStatus_Click" />
 				</RibbonGroup>
+				<RibbonGroup Header="Relay Control">
+					<Grid>
+						<Grid.RowDefinitions>
+							<RowDefinition Height="*" />
+							<RowDefinition Height="4" />
+							<RowDefinition Height="*" />
+						</Grid.RowDefinitions>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition />
+						</Grid.ColumnDefinitions>
+
+						<Label Grid.Row="0" Grid.Column="0">Thermostat:</Label>
+						<ToggleSwitch:HorizontalToggleSwitch x:Name="ThermoCtrlSwitch" Grid.Row="0" Grid.Column="1" FontFamily="Segoe UI" FontSize="12" Checked="ThermoCtrlSwitch_Checked"/>
+						<Label Grid.Row="2" Grid.Column="0">Programming:</Label>
+						<ToggleSwitch:HorizontalToggleSwitch x:Name="ProgrammingCtrlSwitch" Grid.Row="2" Grid.Column="1" FontFamily="Segoe UI" FontSize="12" Checked="ProgrammingCtrlSwitch_Checked" />
+					</Grid>
+				</RibbonGroup>
 			</RibbonTab>
 		</Ribbon>
 		<StatusBar DockPanel.Dock="Bottom">
-			<Label>
-				Status Bar.
-			</Label>
+			<Label Content="Status Bar."/>
 		</StatusBar>
-		<oxy:PlotView x:Name="_graph" Model="{Binding Model}">
-		</oxy:PlotView>
+		<oxy:PlotView x:Name="_graph" Model="{Binding Model}"/>
 	</DockPanel>
 </Window>
  
