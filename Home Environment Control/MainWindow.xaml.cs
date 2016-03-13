@@ -14,6 +14,10 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Net;
 using System.Net.Sockets;
+using System.Data.Common;
+using MySql.Data.MySqlClient;
+using System.Diagnostics;
+using System.ComponentModel;
 
 using Ruminations.Database.MySQL;
 
@@ -25,11 +29,23 @@ namespace Home_Environment_Control {
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window, IDisposable {
+	public partial class MainWindow : Window, IDisposable, INotifyPropertyChanged {
+		//---------------------------------------------------------------------
+		// Events
+		//---------------------------------------------------------------------
+		public event PropertyChangedEventHandler PropertyChanged;
+
+		//---------------------------------------------------------------------
+		// Members
+		//---------------------------------------------------------------------
 		private MySQLConnection _dbConnection = null;
 		private Network _network;
 		private bool _isCorrelationPlot;
 		private SocketController _socketCtrl;
+
+		//---------------------------------------------------------------------
+		// Properties
+		//---------------------------------------------------------------------
 
 		#region Methods
 		//---------------------------------------------------------------------
@@ -65,6 +81,9 @@ namespace Home_Environment_Control {
 					_network = new Network();
 					_network.Populate(_dbConnection);
 
+					// Get the latest relay state
+					ReadThermoState();
+
 					// Set the data context for this window
 					TimeSeriesPlot curPlot = new TimeSeriesPlot();
 					_isCorrelationPlot = false;
@@ -81,6 +100,38 @@ namespace Home_Environment_Control {
 			}
 		}
 
+		//---------------------------------------------------------------------
+		// ReadThermoState
+		//---------------------------------------------------------------------
+		private void ReadThermoState() {
+			// GET THE ADDRESS OF THE CONTROLLING RADIO FOR THE RELAY
+			///////////////////////////////////////////////////////////////////
+			// Query for most recent address
+			string radioStr = "";
+			using(DbDataReader reader = _dbConnection.RunQuery("SELECT radio_id FROM radios WHERE location_id=6 ORDER BY assign_time DESC LIMIT 1")) {
+				// Get the radio
+				if(reader.Read()) radioStr = reader.GetString(0);
+				else throw new Exception("Unable to get a radio for the living room relay");
+			}
+
+			// GET THE STATUS OF THE THERMOSTAT AND THE OVERRIDE (PROGRAMMING STATE)
+			///////////////////////////////////////////////////////////////////
+			// Query for the latest state
+			using(DbDataReader reader = _dbConnection.RunQuery("SELECT thermo_on, override FROM measurements WHERE radio_id='" + radioStr + "' ORDER BY measure_time DESC LIMIT 1")) {
+				// Get the information and set the controls
+				if(reader.Read()) {
+					this.ThermoCtrlSwitch.IsChecked = reader.GetInt32(0) == 1;
+					this.ProgrammingCtrlSwitch.IsChecked = reader.IsDBNull(1);
+				}
+			}
+
+			// SET THE CONTROL STATUS
+			///////////////////////////////////////////////////////////////////
+        }
+
+		//---------------------------------------------------------------------
+		// Dispose
+		//---------------------------------------------------------------------
 		protected virtual void Dispose(bool disposing) {
 			// Get rid of managed objects
 			if(disposing) {
@@ -89,6 +140,9 @@ namespace Home_Environment_Control {
 			}
 		}
 
+		//---------------------------------------------------------------------
+		// Dispose
+		//---------------------------------------------------------------------
 		public void Dispose() {
 			Dispose(true);
 			GC.SuppressFinalize(this);

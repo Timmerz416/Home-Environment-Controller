@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:oxy="http://oxyplot.org/wpf"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="Home_Environment_Control.MainWindow"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" x:Name="window" mc:Ignorable="d" x:Class="Home_Environment_Control.MainWindow"
 		xmlns:ToggleSwitch="clr-namespace:ToggleSwitch;assembly=ToggleSwitch"
         Title="Home Environment Control" Height="600" Width="750">
 	<DockPanel>
@@ -58,7 +58,7 @@
 						</Grid.ColumnDefinitions>
 
 						<Label Grid.Row="0" Grid.Column="0">Thermostat:</Label>
-						<ToggleSwitch:HorizontalToggleSwitch x:Name="ThermoCtrlSwitch" Grid.Row="0" Grid.Column="1" FontFamily="Segoe UI" FontSize="12" Checked="ThermoCtrlSwitch_Checked"/>
+						<ToggleSwitch:HorizontalToggleSwitch x:Name="ThermoCtrlSwitch" Grid.Row="0" Grid.Column="1" FontFamily="Segoe UI" FontSize="12" Checked="ThermoCtrlSwitch_Checked" IsChecked="{Binding ThermostatOn, ElementName=window}"/>
 						<Label Grid.Row="2" Grid.Column="0">Programming:</Label>
 						<ToggleSwitch:HorizontalToggleSwitch x:Name="ProgrammingCtrlSwitch" Grid.Row="2" Grid.Column="1" FontFamily="Segoe UI" FontSize="12" Checked="ProgrammingCtrlSwitch_Checked" />
 					</Grid>
